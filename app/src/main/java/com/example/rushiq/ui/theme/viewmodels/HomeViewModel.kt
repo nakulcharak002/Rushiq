@@ -200,6 +200,14 @@ class HomeViewModel @Inject constructor(
                 word.replaceFirstChar { it.uppercaseChar() }
             }
     }
+    fun fixProductsImageUrl(){
+        viewModelScope.launch (Dispatchers.Default){
+            val existingProducts = _products.value
+            val fixedProducts = processProducts(existingProducts)
+            _products.value = fixedProducts
+
+        }
+    }
 
 
 

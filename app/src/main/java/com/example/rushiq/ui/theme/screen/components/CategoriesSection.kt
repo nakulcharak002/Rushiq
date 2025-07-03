@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.rushiq.data.models.fakeapi.Category
-  import androidx. compose. foundation. lazy. items
+  import androidx.compose.foundation.lazy.items
 
 
 @Composable

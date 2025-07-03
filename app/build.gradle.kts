@@ -162,5 +162,6 @@ dependencies {
     implementation ("org.osmdroid:osmdroid-android:6.1.16")
     //shimmer effect
     implementation ("com.valentinilk.shimmer:compose-shimmer:1.0.5")
+    implementation ("com.airbnb.android:lottie-compose:6.3.0")
 }
 

@@ -37,7 +37,7 @@ fun CategoryItem(
 
     ) {
         Image(
-            painter = painterResource(category.imageRes),
+            painter = painterResource(category.iconRes),
             contentDescription = category.name,
             modifier = Modifier.size(28.dp),
             colorFilter = ColorFilter.tint(Color.White)
