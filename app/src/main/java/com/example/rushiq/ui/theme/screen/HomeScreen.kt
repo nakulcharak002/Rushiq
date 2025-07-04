@@ -44,7 +44,9 @@ import kotlinx.coroutines.flow.filter
 import androidx.constraintlayout.compose.Dimension
 import com.example.rushiq.ui.theme.screen.components.CategoriesSection
 import com.example.rushiq.ui.theme.screen.components.LocationBar
+import com.example.rushiq.ui.theme.screen.components.ProductCard
 import com.example.rushiq.ui.theme.screen.components.SearchBar
+import com.example.rushiq.ui.theme.screen.components.TrendingProductsSection
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMotionApi::class, ExperimentalFoundationApi::class)
@@ -254,8 +256,7 @@ fun OptimizedProductList(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 8.dp)
-                    .animateItemPlacement(),
+                    .padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 for (product in rowProducts) {
