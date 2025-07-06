@@ -1,10 +1,12 @@
 package com.example.rushiq.ui.theme.viewmodels
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.rushiq.data.models.fakeapi.CartItem
 import com.example.rushiq.data.models.fakeapi.Products
-import com.example.zepto.data.repository.CartRepository
+import com.example.rushiq.data.repository.CartRepository
 import com.example.zepto.data.repository.PaymentRepository
-import com.example.zepto.models.CartItem
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,11 +53,9 @@ class CartViewModel(
     private val _finalTotal = MutableStateFlow(0.0)
     val finalTotal: StateFlow<Double> = _finalTotal
 
-    fun addToCard(products: Products){
-        viewModelScope.launch{
-            cartRepository.addTocard(products)
+    fun addToCart(products: Products) {
+        viewModelScope.launch {
+            cartRepository.addToCart(products)
         }
     }
-
 }
-

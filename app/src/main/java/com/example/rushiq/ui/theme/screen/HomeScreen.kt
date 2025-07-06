@@ -47,6 +47,7 @@ import com.example.rushiq.ui.theme.screen.components.LocationBar
 import com.example.rushiq.ui.theme.screen.components.ProductCard
 import com.example.rushiq.ui.theme.screen.components.SearchBar
 import com.example.rushiq.ui.theme.screen.components.TrendingProductsSection
+import com.example.rushiq.ui.theme.viewmodels.CartViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMotionApi::class, ExperimentalFoundationApi::class)
@@ -263,7 +264,7 @@ fun OptimizedProductList(
                     Box(modifier = Modifier.weight(1f)) {
                         key(product.id) {
                             ProductCard(
-                                product = product,
+                                products = product,
                                 cardViewModel = cartViewModel,
                                 onProductClick = onProductClick
                             )
