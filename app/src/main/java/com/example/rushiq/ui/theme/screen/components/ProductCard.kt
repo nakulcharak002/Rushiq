@@ -60,7 +60,7 @@ fun ProductCard(
     val discountPercentage = remember { (Math.random()*60+20).toInt() }
 
      val cardItems by cardViewModel.cartItems.collectAsState()
-    val quantity = cardItems.find { it.product.id == products.id  }?.quantity?:0
+    val quantity = cardItems.find { it.products.id == products.id  }?.quantity?:0
 
     val discountBadgeShape = RoundedCornerShape(
         topStart = 12.dp,
@@ -163,7 +163,7 @@ fun ProductCard(
                              )
                              .clickable {
                                  // Add product to cart
-                                 cardViewModel.addToCard(products)
+                                 cardViewModel.addToCart(products)
                              },
                          contentAlignment = Alignment.Center
                      ) {
@@ -220,7 +220,7 @@ fun ProductCard(
                              modifier = Modifier
                                  .size(32.dp)
                                  .clickable {
-                                     cardViewModel.addToCard(products)
+                                     cardViewModel.addToCart(products)
 
                                  },
                              contentAlignment = Alignment.Center
