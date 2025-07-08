@@ -92,7 +92,7 @@ class CartViewModel(
         }
     }
 
-    fun setTotalTip(amount: Int) {
+    fun setTipAmount(amount: Int) {
         _tipAmount.value = amount.toDouble()
         updateTotalTip()
         updateFinalTotal()
