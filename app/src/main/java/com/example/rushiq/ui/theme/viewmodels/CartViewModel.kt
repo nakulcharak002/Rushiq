@@ -1,6 +1,9 @@
 package com.example.rushiq.ui.theme.viewmodels
 
+import android.content.ContentValues.TAG
 import android.icu.util.Calendar
+import android.util.Log
+import androidx.compose.ui.platform.LocalGraphicsContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.rushiq.data.models.fakeapi.CartItem
@@ -176,4 +179,26 @@ class CartViewModel(
     fun generateOrderId(): String {
         return "ORDER-" + System.currentTimeMillis()
     }
+    suspend fun getCartItemsWithImageUrls(): Pair<List<String>, Map<String, String>> {
+        Log.d(TAG, "Getting cart items with image URLs")
+        val cartItems = cartRepository.getCartItems().first()
+
+        // Create formatted item strings (this is what you're already storing)
+        val itemDetails = cartItems.map { cartItem ->
+            "${cartItem.products.name} (₹${cartItem.products.price} x ${cartItem.quantity}) = ₹${cartItem.products.price * cartItem.quantity}"
+        }
+
+        // Create a map of item ID to image URL
+        val imageUrls = cartItems.associate { cartItem ->
+            cartItem.products.id.toString() to (cartItem.products.imageUrl ?: "")
+        }.filter { it.value.isNotEmpty() } // only include non-empty URLs
+
+        Log.d(TAG, "Found ${itemDetails.size} items with ${imageUrls.size} image URLs")
+        imageUrls.forEach { (id, url) ->
+            Log.d(TAG, "Item $id has image URL: $url")
+        }
+
+        return Pair(itemDetails, imageUrls)
+    }
+
 }

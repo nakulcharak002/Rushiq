@@ -1,10 +1,10 @@
 package com.example.rushiq.ui.theme.screen
 
+import android.R
 import android.app.Activity
+import android.content.Intent
+import android.util.Log
 import android.widget.Toast
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -16,35 +16,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -52,11 +31,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
+import com.example.rushiq.ui.theme.screen.components.BillSummaryBottomSheet
 import com.example.rushiq.ui.theme.screen.components.DeliveryPartnerTipSection
 import com.example.rushiq.ui.theme.screen.components.EnhancedCartItemRow
 import com.example.rushiq.ui.theme.viewmodels.AuthViewModel
 import com.example.rushiq.ui.theme.viewmodels.CartViewModel
 import com.example.rushiq.ui.theme.viewmodels.LocationViewModel
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
@@ -73,11 +55,12 @@ fun CartScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val cartItems by cartViewModel.cartItems.collectAsState()
     val totalPrice by cartViewModel.totalPrice.collectAsState()
-    val buttonColor = Color(0xFFFF5F6D)  // Pink color for buttons
-    val savedColor = Color(0xFF8BC34A)   // Light green for saved amount
-    val accentGreen = Color(0xFF4CAF50)  // Green for success icons
+    val buttonColor = Color(0xFFFF5F6D)
+    val savedColor = Color(0xFF8BC34A)
+    val accentGreen = Color(0xFF4CAF50)
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     val tipAmount by cartViewModel.tipAmount.collectAsState()
     val totalWithTip by cartViewModel.totalWithTip.collectAsState()
@@ -114,6 +97,65 @@ fun CartScreen(
         }
     }
 
+    fun launchPaymentActivity() {
+        val orderId = cartViewModel.generateOrderId()
+        val email = currentUser?.email ?: ""
+
+        (context as? androidx.lifecycle.LifecycleOwner)?.lifecycleScope?.launch {
+            try {
+                val (itemDetails, imageUrls) = cartViewModel.getCartItemsWithImageUrls()
+                Log.d("CartScreen", "Launching payment with ${itemDetails.size} items and ${imageUrls.size} image URLs")
+                imageUrls.forEach { (id, url) ->
+                    Log.d("CartScreen", "Item $id has image URL: $url")
+                }
+                val intent = Intent(context, PaymentActivity::class.java).apply {
+                    putExtra("TOTAL_AMOUNT", finalTotal)
+                    putExtra("ORDER_ID", orderId)
+                    putExtra("USER_EMAIL", email)
+                    putExtra("USER_PHONE", phone)
+                    putExtra("TIP_AMOUNT", tipAmount)
+                    putExtra("DELIVERY_ADDRESS", address)
+                    putStringArrayListExtra("CART_ITEMS_DATA", ArrayList(itemDetails))
+                    putExtra("CART_ITEMS_IMAGES", HashMap<String, String>(imageUrls))
+                }
+                paymentLauncher.launch(intent)
+
+            } catch (e: Exception) {
+                Log.d("CartScreen", "Error preparing payment intent", e)
+                Toast.makeText(context, "Error preparing payment", Toast.LENGTH_SHORT).show()
+            }
+        }?:run {
+            Log.w("CartScreen" ,"LifecycleOwner not available . using non-Coroutine approach")
+            val intent = Intent(context, PaymentActivity::class.java).apply {
+                putExtra("TOTAL_AMOUNT", finalTotal)
+                putExtra("ORDER_ID", orderId)
+                putExtra("USER_EMAIL", email)
+                putExtra("USER_PHONE", phone)
+                putExtra("TIP_AMOUNT", tipAmount)
+                putExtra("DELIVERY_ADDRESS", address)
+
+                val simpleItemDetails = cartItems.map{
+                    cartItem ->
+                    "${cartItem.products.name} (${cartItem.products.price} x ${cartItem.quantity}= ${cartItem.products.price * cartItem.quantity})"
+                }
+                putStringArrayListExtra("CART_ITEMS_DATA", ArrayList(simpleItemDetails))
+            }
+            paymentLauncher.launch(intent)
+        }
+    }
+
+    BillSummaryBottomSheet(
+        isVisible = isBottomSheetVisible,
+        onDismiss= {cartViewModel.hideBottomSheet()},
+    totalPrice = totalPrice,
+    itemCount = totalItems,
+    tipAmount = tipAmount,
+    onApplyFreeDelivery = {cartViewModel.applyFreeDelivery()},
+    isFreeDeliveryApplied =  isFreeDeliveryApplied,
+    isApplyingFreeDelivery = isApplyingFreeDelivery,
+    finalTotal = finalTotal,
+    onPayClicked = {launchPaymentActivity()}
+    )
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -126,19 +168,12 @@ fun CartScreen(
                 .padding(bottom = bottomSheetHeight)
                 .verticalScroll(scrollState)
         ) {
-            // Sticky header - cart summary with saving
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+            Box(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp),
+                            .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
@@ -161,7 +196,6 @@ fun CartScreen(
                             modifier = Modifier.padding(start = 8.dp)
                         )
                         Spacer(modifier = Modifier.weight(1f))
-                        // Saved badge
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(16.dp))
@@ -216,7 +250,9 @@ fun CartScreen(
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(8.dp))
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -252,6 +288,7 @@ fun CartScreen(
                     )
                 }
             }
+
             if (cartItems.isEmpty()) {
                 Box(
                     modifier = Modifier
@@ -260,9 +297,7 @@ fun CartScreen(
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             imageVector = Icons.Default.ShoppingCart,
                             contentDescription = "Empty Cart",
@@ -285,9 +320,7 @@ fun CartScreen(
                         Spacer(modifier = Modifier.height(24.dp))
                         Button(
                             onClick = onNavigateBack,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = buttonColor
-                            ),
+                            colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                             shape = RoundedCornerShape(8.dp)
                         ) {
                             Text(
@@ -815,7 +848,7 @@ fun CartScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.White)
-                ) {//delivery loaction
+                ) {//delivery location
                     Box(
                         modifier = Modifier.fillMaxWidth()
                             .background(Color.White)
@@ -951,6 +984,7 @@ fun CartScreen(
                         modifier = Modifier.background(Color.White)
                     )
                     {
+                        //completing the pay button code
                         Button(
                             onClick = {
                                 if (totalPrice < 200.0) {
