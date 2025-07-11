@@ -17,6 +17,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,14 +37,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.zepto.R
 import com.google.api.Billing
+import kotlinx.coroutines.launch
 import java.util.Calendar
 import kotlin.contracts.contract
 import kotlin.math.roundToInt
@@ -83,7 +90,7 @@ fun BillSummaryBottomSheet(
 
     val rawItemTotal = totalPrice
     val itemCost = rawItemTotal
-    val expectedTotal = itemCost + handlingCost + gstOnHandling + (if (isLateNight) gstOnLateNight else 0.0)
+    val exactItemTotal = itemCost + handlingCost + gstOnHandling + (if (isLateNight) gstOnLateNight else 0.0)
     val originalItemPrice = (itemCost + 1.1).roundToInt()
 
     // Use the pre-calculated finalTotal instead of recalculating here
@@ -166,7 +173,7 @@ fun BillSummaryBottomSheet(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "₹${expectedTotal.roundToInt()}",
+                            text = "₹${exactItemTotal.roundToInt()}",
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Bold
                         )
@@ -336,10 +343,119 @@ fun BillSummaryBottomSheet(
                     }
                 }
                 Spacer(modifier = Modifier.height(24.dp))
-
+                Button(
+                    onClick = {
+                        coroutineScope.launch {
+                            sheetState.hide()
+                            onDismiss()
+                            onPayClicked()// this will now call our updated launchPayment Activity function
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                        .height(56.dp),
+                        colors= ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFFF3F6C)
+                        ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "PROCEED TO PAY ₹${finalTotal.roundToInt()} ",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(24.dp))
 
             }
         }
-    }
+        if (showInfoPopup) {
+            Dialog(onDismissRequest = { showInfoPopup = false }) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth() // increased width
+                        .padding(16.dp)
+                        .shadow(8.dp, RoundedCornerShape(16.dp)),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(20.dp)
+                    ) {
+                        // Header
+                        Text(
+                            text = "Zepto has no role to play in the taxes and charges being levied by the government",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.Black
+                        )
 
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // Dynamic item cost from user's cart
+                        PriceRow(
+                            label = "Item Cost",
+                            amount = itemCost
+                        )
+
+                        // Fixed handling fees
+                        PriceRow(
+                            label = "Item Handling Cost",
+                            amount = handlingCost
+                        )
+
+                        PriceRow(
+                            label = "GST on Item Handling Cost",
+                            amount = gstOnHandling
+                        )
+                        //late night handling charge GST (if applicable)
+                        if(isLateNight){
+                            PriceRow(
+                                label = "GST on late night handling charge",
+                                amount = gstOnLateNight
+                            )
+                        }
+                        Divider(
+                            modifier = Modifier.padding(vertical = 16.dp),
+                            color = Color.LightGray
+
+                        )
+                        PriceRow(
+                            label = "Item total & GST",
+                            amount = exactItemTotal,
+                            isBold = true ,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+@Composable
+fun PriceRow(
+    label: String,
+    amount: Double,
+    isBold: Boolean = false
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
+            color = Color.DarkGray
+        )
+
+        Text(
+            text = "₹${String.format("%.2f", amount)}",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
+            color = Color.DarkGray
+        )
+    }
 }
