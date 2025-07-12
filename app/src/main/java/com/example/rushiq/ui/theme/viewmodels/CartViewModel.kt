@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.rushiq.data.models.fakeapi.CartItem
 import com.example.rushiq.data.models.fakeapi.Products
 import com.example.rushiq.data.repository.CartRepository
+import com.example.rushiq.data.repository.PaymentRepository
 import com.example.zepto.data.repository.PaymentRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*

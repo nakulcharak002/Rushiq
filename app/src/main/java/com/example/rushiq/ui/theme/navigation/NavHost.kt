@@ -8,8 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.rushiq.ui.theme.screen.HomeScreen
 import com.example.rushiq.ui.theme.viewmodels.ProductViewModel
-// import com.example.rushiq.ui.theme.viewmodels.AuthViewModel
-// import com.example.rushiq.ui.theme.viewmodels.CartViewModel
+import com.example.rushiq.ui.theme.viewmodels.CartViewModel // ✅ added import
 import com.example.rushiq.ui.theme.navigation.ZeptoDestinations
 
 @Composable
@@ -22,7 +21,7 @@ fun ZeptoNavGraph(
     // ViewModels (uncomment when implementing these)
     // val authViewModel: AuthViewModel = hiltViewModel(),
     productViewModel: ProductViewModel = hiltViewModel(),
-    // val cartViewModel: CartViewModel = hiltViewModel(),
+    cartViewModel: CartViewModel = hiltViewModel(), //
 ) {
     // Collect the product list from the ViewModel
     val products by productViewModel.products.collectAsState()
@@ -54,8 +53,7 @@ fun ZeptoNavGraph(
                 onProductClick = { productId ->
                     setSelectedProductId(productId)
                 },
-                // Uncomment when you use cart viewmodel
-                 cartViewModel = cartViewModel
+                cartViewModel = cartViewModel //
             )
         }
 

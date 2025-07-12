@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -274,8 +275,57 @@ class PaymentViewModel @Inject constructor(
             }
         }
     }
-
-
-
-
+    private fun createAndReturnDummyPayment(
+        paymentId: String,
+        status: String,
+        onSuccess: (PaymentRecord) -> Unit
+    ) {
+        Log.d(TAG,  "Creating dummy payment record with status: $status")
+        val dummyPayment = PaymentRecord(
+            id = paymentId,
+            orderId = _orderId.value,
+            amount = _amount.value,
+            timestamp = Date(),
+            userEmail = _userEmail.value,
+            userPhone = _userPhone.value,
+            status = status,
+            itemImageUrls = _itemImageUrls.value // Include image URLs in dummy payments
+        )
+        Log.d(TAG, "Dummy payment created with ID: $paymentId, amount: ${_amount.value}")
+        onSuccess(dummyPayment)
     }
+
+    // Helper function to handle Firestore errors consistently
+    private fun handleFirestoreError(
+        errorMessage: String,
+        continueSuccess: () -> Unit?,
+        reportError: (String) -> Unit?
+    ) {
+        Log.e(TAG,  "Handling Firestore error: $errorMessage")
+        Log.d(TAG,  "continueSuccess is ${if (continueSuccess == null) "null" else "not null"}")
+        Log.d(TAG,  "reportError is ${if (reportError == null) "null" else "not null"}")
+
+        _isLoading.value = false
+
+        // If we should just continue with success flow despite Firestore error
+        if (reportError == null && continueSuccess != null) {
+            Log.d(TAG,  "Continuing with success flow despite Firestore error")
+            continueSuccess()
+        } else if (reportError != null) {
+            Log.d(TAG,  "Reporting error to caller: $errorMessage")
+            reportError(errorMessage)
+        } else {
+            Log.e(TAG,"Both continueSuccess and reportError are null - no action taken")
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+    }
+
+}
+
+
+
+
+
