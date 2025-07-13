@@ -178,6 +178,7 @@ class PaymentViewModel @Inject constructor(
     fun getPaymentDetails(
         paymentId: String,
         onSuccess: (PaymentRecord) -> Unit,
+
         onError: (String) -> Unit
     ) {
         viewModelScope.launch {

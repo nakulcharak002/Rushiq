@@ -71,6 +71,17 @@ class PaymentActivity : ComponentActivity(), PaymentResultListener {
                             onNavigateBack = { finish() }
                         )
                     }
+//                    composable("payment_success/{paymentId}"){backStackEntry->
+//                        val paymentId = backStackEntry.arguments?.getString("paymentId")?:""
+//                        PaymentSuccessScreen(
+//                            paymentId = paymentId,
+//                            onDone ={
+//                                setResult(RESULT_OK)
+//                                finish()
+//                            }
+//                        )
+//
+//                    }
                 }
             }
         }
@@ -118,7 +129,7 @@ class PaymentActivity : ComponentActivity(), PaymentResultListener {
             checkout?.setKeyID(apiKey)
 
             val options = JSONObject().apply {
-                put("name", "Zepto")
+                put("name", "Rushiq")
                 put("description", "Order Payment")
                 put("currency", "INR")
                 put("amount", (amount * 100).toInt()) // amount in paise
