@@ -10,6 +10,9 @@ import com.example.rushiq.ui.theme.screen.HomeScreen
 import com.example.rushiq.ui.theme.viewmodels.ProductViewModel
 import com.example.rushiq.ui.theme.viewmodels.CartViewModel // ✅ added import
 import com.example.rushiq.ui.theme.navigation.ZeptoDestinations
+import com.example.rushiq.ui.theme.screen.AuthScreen
+import com.example.rushiq.ui.theme.viewmodels.AuthViewModel
+import com.google.firebase.auth.oAuthProvider
 
 @Composable
 fun ZeptoNavGraph(
@@ -57,7 +60,23 @@ fun ZeptoNavGraph(
             )
         }
 
-        // Add other destinations here, e.g., CategoryDetail, Search, ProductDetail, etc.
-        // composable(ZeptoDestinations.CategoryDetail.route) { ... }
+        composable(ZeptoDestinations.Auth.route){
+            LaunchedEffect(Unit) {
+                onBottomBarVisibilityChange(false)
+            }
+            AuthScreen(
+                onAuthSuccess = {
+                    navController.navigate(ZeptoDestinations.Welcome.route){
+                        popUpTo(ZeptoDestinations.Auth.route){inclusive = true}
+
+                    }
+                    onBottomBarVisibilityChange(true)
+                },
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                viewModel = authViewModel
+            )
+        }
     }
 }

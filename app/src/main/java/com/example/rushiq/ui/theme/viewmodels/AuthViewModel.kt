@@ -9,6 +9,7 @@ import com.example.rushiq.data.repository.AuthRepository
 import com.example.rushiq.ui.theme.navigation.ZeptoDestinations
 import com.example.rushiq.ui.theme.utils.AuthState
 import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.ktx.oAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -96,6 +97,13 @@ class AuthViewModel @Inject constructor(
             val result = authRepository.signUpWithCustomEmail(email, password)
             processAuthResult(result, "Custom sign up")
         }
+    }
+    //Google authentication
+    fun getGoogleSignInIntent(activity: Activity):Intent{
+        Log.d(TAG , "getting google sign - In intent")
+        _authState.value = AuthState.Loading
+        return authRepository.getGoogleSignInIntent()
+
     }
 
 
@@ -207,6 +215,10 @@ class AuthViewModel @Inject constructor(
 
     companion object {
         const val GOOGLE_SIGN_IN_REQUEST_CODE = 9001
+    }
+    fun setErrorState(message: String) {
+        Log.d(TAG, "Setting error state: $message")
+        _authState.value = AuthState.Error(message)
     }
 
 }
