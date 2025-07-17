@@ -435,7 +435,7 @@ fun AuthScreen(
                         Text(
                             "Privacy Policy",
                             color = rushiqPink.copy(alpha = 0.8f),
-                            fontSize = 12.sp
+                            fontSize = 12.dp
                         )
                     }
                 }
