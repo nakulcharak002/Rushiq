@@ -154,6 +154,8 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun getCurrentUser() = authRepository.getCurrentUser()
+
 
 
     private fun processAuthResult(result: Result<String>, operation: String) {
@@ -207,6 +209,7 @@ class AuthViewModel @Inject constructor(
         _otpSent.value = false
         verificationCredential = null
     }
+
 
     fun resetAuthState() {
         Log.d(TAG,  "Resetting auth state")
