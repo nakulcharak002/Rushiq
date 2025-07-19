@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.*
-import com.example.zepto.R
+import com.example.rushiq.R
 
 @Composable
 fun LottieSaleAnimation(

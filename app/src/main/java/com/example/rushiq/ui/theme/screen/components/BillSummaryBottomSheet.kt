@@ -47,7 +47,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.zepto.R
+import com.example.rushiq.R
 import com.google.api.Billing
 import kotlinx.coroutines.launch
 import java.util.Calendar

@@ -9,7 +9,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -20,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rushiq.data.models.fakeapi.Products
 import com.example.rushiq.ui.theme.viewmodels.HomeViewModel
-import com.example.zepto.R
+import com.example.rushiq.R
 import getCategoryGradient
 
 private const val TAG = "TrendingProductSection"

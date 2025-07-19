@@ -1,6 +1,6 @@
 package com.example.rushiq.ui.theme.screen
 
-import android.R
+
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
+import com.example.rushiq.ui.theme.payment.PaymentActivity
 import com.example.rushiq.ui.theme.screen.components.BillSummaryBottomSheet
 import com.example.rushiq.ui.theme.screen.components.DeliveryPartnerTipSection
 import com.example.rushiq.ui.theme.screen.components.EnhancedCartItemRow

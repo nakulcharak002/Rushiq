@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -19,7 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rushiq.ui.theme.viewmodels.PaymentViewModel
 import com.example.rushiq.ui.theme.utils.PaymentStatus
-import com.example.zepto.BuildConfig
+import com.example.rushiq.BuildConfig
 import com.razorpay.Checkout
 import com.razorpay.PaymentResultListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -120,7 +119,7 @@ class PaymentActivity : ComponentActivity(), PaymentResultListener {
         try {
             checkout = Checkout()
 
-            val apiKey = BuildConfig.PAYMENT_API_KEY
+                  val apiKey = BuildConfig.PAYMENT_API_KEY
             if (apiKey.isBlank()) {
                 throw IllegalStateException("PAYMENT_API_KEY is missing or empty")
             }

@@ -1,7 +1,7 @@
 package com.example.rushiq.data.repository
 import com.example.rushiq.data.models.fakeapi.Category
 import com.example.rushiq.data.api.FakeStoreApiServices
-import com.example.zepto.R
+import com.example.rushiq.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

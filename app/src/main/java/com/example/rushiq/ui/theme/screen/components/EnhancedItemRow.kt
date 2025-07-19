@@ -36,7 +36,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.rushiq.data.models.fakeapi.CartItem
 import com.example.rushiq.ui.theme.viewmodels.CartViewModel
-import com.example.zepto.R
+import com.example.rushiq.R
 
 @Composable
 fun EnhancedCartItemRow(

@@ -6,7 +6,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.rushiq.data.models.fakeapi.Category
 import com.example.rushiq.data.models.fakeapi.Products
 import com.example.rushiq.data.repository.ProductRepository
-import com.example.zepto.R
+import com.example.rushiq.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

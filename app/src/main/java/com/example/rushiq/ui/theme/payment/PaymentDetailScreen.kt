@@ -69,7 +69,9 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.rushiq.data.models.mealDB.PaymentRecord
-import com.example.zepto.R
+import com.example.rushiq.ui.theme.viewmodels.PaymentDetailState
+import com.example.rushiq.ui.theme.viewmodels.PaymentDetailViewModel
+import com.example.rushiq.R
 import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -124,7 +126,7 @@ fun PaymentDetailsScreen(
                 is PaymentDetailState.Loading -> {
                     LoadingState()
                 }
-                is PaymentDetailState.Sucess -> {
+                is PaymentDetailState.Success -> {
                     ProfessionalPaymentDetailContent(payment = state.payment)
                 }
                 is PaymentDetailState.Error -> {

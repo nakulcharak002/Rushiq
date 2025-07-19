@@ -1,6 +1,5 @@
 package com.example.rushiq.ui.theme.screen
 
-import com.example.rushiq.R
 import android.app.Activity
 import android.util.Log
 
@@ -45,6 +44,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.rushiq.R
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -62,7 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.rushiq.ui.theme.utils.AuthState
 import com.example.rushiq.ui.theme.viewmodels.AuthViewModel
-import io.ktor.websocket.Frame
+
 
 enum class RushiqAuthMode {
     SIGN_IN,

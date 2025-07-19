@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.example.rushiq.data.models.fakeapi.Products
-import com.example.zepto.R
+import com.example.rushiq.R
 import okhttp3.internal.format
 
 private const val TAG = "TrendingProductCard"

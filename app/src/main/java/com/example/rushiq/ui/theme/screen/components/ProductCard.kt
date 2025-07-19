@@ -47,8 +47,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.rushiq.data.models.fakeapi.Products
 import com.example.rushiq.ui.theme.viewmodels.CartViewModel
-import com.example.zepto.R
-import kotlin.coroutines.jvm.internal.CompletedContinuation.context
+import com.example.rushiq.R
+
 
 @Composable
 fun ProductCard(
@@ -188,7 +188,7 @@ fun ProductCard(
                              modifier = Modifier
                                  .size(32.dp)
                                  .clickable {
-                                     cardViewModel.removeFromCard(products)
+                                     cardViewModel.removeFromCart(products)
 
                                  },
                              contentAlignment = Alignment.Center

@@ -15,8 +15,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,37 +34,46 @@ import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.constraintlayout.compose.MotionLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.ImageLoader
 import coil.request.ImageRequest
+import coil.compose.AsyncImage
 import com.example.rushiq.data.models.fakeapi.Products
 import com.example.rushiq.ui.theme.navigation.ZeptoDestinations
-import com.example.rushiq.ui.theme.viewmodels.HomeViewModel
-import com.example.rushiq.R
-import getCategoryGradient
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
-import androidx.constraintlayout.compose.Dimension
-import coil.compose.AsyncImage
+import com.example.rushiq.ui.theme.viewmodels.CafeViewModel
 import com.example.rushiq.ui.theme.screen.components.CategoriesSection
 import com.example.rushiq.ui.theme.screen.components.LocationBar
 import com.example.rushiq.ui.theme.screen.components.ProductCard
 import com.example.rushiq.ui.theme.screen.components.SearchBar
-import com.example.rushiq.ui.theme.screen.components.TrendingProductsSection
 import com.example.rushiq.ui.theme.viewmodels.CartViewModel
+import com.example.rushiq.R
+import com.example.rushiq.data.models.fakeapi.Category
+import com.example.rushiq.data.models.mealDB.MealCategory
+import getCategoryGradient
+
+// Extension function to convert MealCategory to Category
+fun MealCategory.toCategory(): Category {
+    return Category(
+        id = this.id.hashCode(), // Convert String to Int using hashCode
+        name = this.name,
+        iconRes = this.imageRes.hashCode() // Convert String to Int using hashCode
+    )
+}
+
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMotionApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun HomeScreen(
+fun CafeScreen(
     paddingValues: PaddingValues,
     onNavigationToCategory: (String) -> Unit,
     navHostController: NavHostController,
     onProductClick: (Int) -> Unit = {},
     cartViewModel: CartViewModel
 ) {
-    val viewModel: HomeViewModel = hiltViewModel()
+    val viewModel: CafeViewModel = hiltViewModel()
     val scrollState = rememberLazyListState()
 
     val categories by viewModel.categories.collectAsState()
@@ -75,14 +84,11 @@ fun HomeScreen(
 
     val productGrid = remember(products) { products.chunked(3) }
 
-    LaunchedEffect(categories) {
-        if (categories.isNotEmpty() && selectedCategory == null) {
-            val allCategory = categories.find { it.name.equals("All", ignoreCase = true) }
-                ?: categories.first()
-            viewModel.selectCategory(allCategory)
-        }
-    }
+    // State for product detail popup
+    var selectedProduct by remember { mutableStateOf<Products?>(null) }
+    var showDetailPopup by remember { mutableStateOf(false) }
 
+    // Fixed scroll progress calculation
     val scrollProgress by remember {
         derivedStateOf {
             when {
@@ -99,7 +105,7 @@ fun HomeScreen(
     )
 
     val categoryBackground = remember(selectedCategory?.id) {
-        selectedCategory?.let { getCategoryGradient(it) }
+        selectedCategory?.let { getCategoryGradient(it.toCategory()) }
             ?: Brush.horizontalGradient(listOf(Color.White, Color.White))
     }
 
@@ -118,8 +124,8 @@ fun HomeScreen(
             .background(categoryBackground)
     ) {
         MotionLayout(
-            start = homeScreenStartConstraintSet(),
-            end = homeScreenEndConstraintSet(),
+            start = cafeScreenStartConstraintSet(),
+            end = cafeScreenEndConstraintSet(),
             progress = animatedScrollProgress,
             modifier = Modifier
                 .fillMaxSize()
@@ -155,10 +161,13 @@ fun HomeScreen(
                     .zIndex(0.8f)
             ) {
                 CategoriesSection(
-                    categories = categories,
-                   onCategorySelection = viewModel::selectCategory,
-                    selectedCategory = selectedCategory,
-
+                    categories = categories.map { it.toCategory() },
+                    onCategorySelection = { category ->
+                        // Since CafeViewModel doesn't have selectCategory method,
+                        // we'll need to add it or handle category selection differently
+                        // For now, this is a placeholder
+                    },
+                    selectedCategory = selectedCategory?.toCategory(),
                 )
             }
 
@@ -188,42 +197,56 @@ fun HomeScreen(
                         }
                     }
                     else -> {
-                        OptimizedProductList(
+                        OptimizedCafeProductList(
                             scrollState = scrollState,
                             products = products,
                             productGrid = productGrid,
-                            onNavigateToCategory = onNavigationToCategory,
-                            viewModel = viewModel,
                             cartViewModel = cartViewModel,
-                            onProductClick = onProductClick
+                            onProductClick = { productId ->
+                                val product = products.find { it.id == productId }
+                                product?.let {
+                                    selectedProduct = it
+                                    showDetailPopup = true
+                                }
+                            }
                         )
                     }
                 }
             }
         }
-    }
 
-    LaunchedEffect(scrollState) {
-        snapshotFlow {
-            scrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.let {
-                it.index >= scrollState.layoutInfo.totalItemsCount - 5
-            } ?: false
-        }.distinctUntilChanged()
-            .filter { it }
-            .collect {
-                // Trigger pagination API call here
+        // Error snackbar - moved outside MotionLayout
+        if (error != null && products.isNotEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+            ) {
+                Snackbar {
+                    Text(error ?: "Unknown error occurred")
+                }
             }
+        }
+
+        // Product detail popup - moved outside MotionLayout
+        selectedProduct?.let { product ->
+            ProductDetailScreen(
+                product = product,
+                isVisible = showDetailPopup,
+                cartViewModel = cartViewModel,
+                onDismiss = { showDetailPopup = false }
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OptimizedProductList(
+fun OptimizedCafeProductList(
     scrollState: LazyListState,
     products: List<Products>,
     productGrid: List<List<Products>>,
-    onNavigateToCategory: (String) -> Unit,
-    viewModel: HomeViewModel,
     cartViewModel: CartViewModel,
     onProductClick: (Int) -> Unit = {}
 ) {
@@ -246,15 +269,6 @@ fun OptimizedProductList(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         flingBehavior = ScrollableDefaults.flingBehavior()
     ) {
-        item(key = "trending_section") {
-            Box(modifier = Modifier.animateItemPlacement()) {
-                TrendingProductsSection(
-                    products = products,
-                    onNavigateToCategory = onNavigateToCategory,
-                    viewModel = viewModel
-                )
-            }
-        }
         items(
             items = productGrid,
             key = { row -> row.firstOrNull()?.id?.toString() ?: row.hashCode().toString() }
@@ -262,7 +276,8 @@ fun OptimizedProductList(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                    .padding(horizontal = 8.dp)
+                    .animateItemPlacement(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 for (product in rowProducts) {
@@ -281,27 +296,27 @@ fun OptimizedProductList(
                 }
             }
         }
-        item(key = "not_found_selection"){
-            Box(
-                modifier =
-                    Modifier
+
+        if (products.isEmpty() && !scrollState.isScrollInProgress) {
+            item(key = "not_found_selection") {
+                Box(
+                    modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 16.dp , bottom = 16.dp)
+                        .padding(top = 16.dp, bottom = 16.dp)
                         .animateItemPlacement(),
-
-            ){
-                NotFoundSection(
-                    imageLoader = imageLoader,
-                    sadEmojiRequest = sadEmojiRequest,
-
-                )
-
+                ) {
+                    CafeNotFoundSection(
+                        imageLoader = imageLoader,
+                        sadEmojiRequest = sadEmojiRequest,
+                    )
+                }
             }
         }
     }
 }
-// Home screen constraint sets
-fun homeScreenStartConstraintSet(): ConstraintSet =
+
+// Cafe screen constraint sets
+fun cafeScreenStartConstraintSet(): ConstraintSet =
     ConstraintSet {
         val locationBar = createRefFor("location_bar")
         val searchBar = createRefFor("search_bar")
@@ -341,11 +356,12 @@ fun homeScreenStartConstraintSet(): ConstraintSet =
             end.linkTo(parent.end)
         }
     }
-fun homeScreenEndConstraintSet(): ConstraintSet =
+
+fun cafeScreenEndConstraintSet(): ConstraintSet =
     ConstraintSet {
         val locationBar = createRefFor(id = "location_bar")
         val searchBar = createRefFor(id = "search_bar")
-        val categorySection = createRefFor(id = "category_section")
+        val categorySection = createRefFor(id = "categories_section")
         val mainContent = createRefFor(id = "main_content")
 
         constrain(locationBar) {
@@ -382,8 +398,9 @@ fun homeScreenEndConstraintSet(): ConstraintSet =
             end.linkTo(parent.end)
         }
     }
+
 @Composable
-fun NotFoundSection(
+fun CafeNotFoundSection(
     imageLoader: ImageLoader,
     sadEmojiRequest: ImageRequest
 ) {
@@ -397,7 +414,7 @@ fun NotFoundSection(
         // Sad emoji image
         AsyncImage(
             model = sadEmojiRequest,
-            contentDescription = "No products found",
+            contentDescription = "No cafe items found",
             imageLoader = imageLoader,
             modifier = Modifier
                 .size(120.dp)
@@ -407,7 +424,7 @@ fun NotFoundSection(
 
         // Title
         Text(
-            text = "Oops! Nothing here",
+            text = "No Cafe Items Available",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
@@ -416,12 +433,10 @@ fun NotFoundSection(
 
         // Description
         Text(
-            text = "We couldn't find any products in this category. Try exploring other categories or check back later!",
+            text = "We're currently loading our cafe menu. Please check back in a moment!",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
     }
 }
-
-

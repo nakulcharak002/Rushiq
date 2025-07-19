@@ -14,7 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.rushiq.ui.theme.viewmodels.CartViewModel
-import com.example.zepto.R
+import com.example.rushiq.R
 
 @Composable
 fun DeliveryPartnerTipSection(

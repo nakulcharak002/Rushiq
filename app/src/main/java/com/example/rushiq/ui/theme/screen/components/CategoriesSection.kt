@@ -19,9 +19,9 @@ import com.example.rushiq.data.models.fakeapi.Category
 
 @Composable
 fun CategoriesSection(
-    categories : List<Category>,
+    categories: List<Category>,
     onCategorySelection: (Category) -> Unit,
-     selectedCategory: Category?
+    selectedCategory: Category?
 ) {
     val lazyListState = rememberLazyListState()
     Box(
