@@ -10,6 +10,20 @@ sealed class ZeptoDestinations(val route: String) {
 
         data object Search : ZeptoDestinations("search")
 
+        data object Cart : ZeptoDestinations("cart")
+
+        data object Account : ZeptoDestinations("account")
+
+        data object Welcome : ZeptoDestinations("welcome")
+
+        data object Cafe : ZeptoDestinations("cafe")
+
+
+
+
+
+
+
 
 
 

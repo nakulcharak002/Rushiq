@@ -1,7 +1,4 @@
 package com.example.rushiq.ui.theme.screen.components
-
-import android.widget.Space
-import androidx.cardview.widget.CardView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
