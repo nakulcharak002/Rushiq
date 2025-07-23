@@ -29,7 +29,7 @@ android {
         applicationId = "com.example.rushiq"
 
         // FIX: Lower minSdk for better device compatibility
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"

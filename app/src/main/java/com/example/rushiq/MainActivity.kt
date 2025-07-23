@@ -1,5 +1,6 @@
 package com.example.rushiq
 
+import RushiqApp
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.os.Build
@@ -8,6 +9,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -28,6 +30,7 @@ import com.valentinilk.shimmer.ShimmerBounds
 
 class MainActivity : ComponentActivity() {
     private lateinit var cartViewModel: CartViewModel
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initializeAppComponents()
@@ -58,7 +61,7 @@ class MainActivity : ComponentActivity() {
                 window.decorView.display?.supportedModes?.filter { it.refreshRate >= 120f }
                     ?.maxByOrNull { it.refreshRate }?.modeId ?: 0
         } catch (e: Exception) {
-            Log.e("Error checking auth status :${e.message}")
+            Log.e("Error checking" , "auth status :${e.message}")
         }
     }
 

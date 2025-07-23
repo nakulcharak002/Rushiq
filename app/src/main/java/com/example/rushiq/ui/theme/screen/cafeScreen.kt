@@ -41,7 +41,7 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.compose.AsyncImage
 import com.example.rushiq.data.models.fakeapi.Products
-import com.example.rushiq.ui.theme.navigation.ZeptoDestinations
+import com.example.rushiq.ui.theme.navigation.RushiqDestination
 import com.example.rushiq.ui.theme.viewmodels.CafeViewModel
 import com.example.rushiq.ui.theme.screen.components.CategoriesSection
 import com.example.rushiq.ui.theme.screen.components.LocationBar
@@ -150,7 +150,7 @@ fun CafeScreen(
                     .zIndex(0.9f)
             ) {
                 SearchBar(onSearchClick = {
-                    navHostController.navigate(ZeptoDestinations.Search.route)
+                    navHostController.navigate(RushiqDestination.Search.route)
                 })
             }
 

@@ -6,10 +6,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.rushiq.data.repository.AuthRepository
-import com.example.rushiq.ui.theme.navigation.ZeptoDestinations
 import com.example.rushiq.ui.theme.utils.AuthState
 import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.ktx.oAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

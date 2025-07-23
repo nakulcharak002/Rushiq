@@ -10,13 +10,16 @@ import com.example.rushiq.data.models.fakeapi.CartItem
 import com.example.rushiq.data.models.fakeapi.Products
 import com.example.rushiq.data.repository.CartRepository
 import com.example.rushiq.data.repository.PaymentRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-class CartViewModel(
+@HiltViewModel
+class CartViewModel @Inject constructor(  // <- Added @Inject here
     private val cartRepository: CartRepository,
     private val paymentRepository: PaymentRepository,
 ) : ViewModel() {

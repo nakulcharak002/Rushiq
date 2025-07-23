@@ -22,9 +22,9 @@ import com.example.rushiq.ui.theme.viewmodels.CartViewModel
 import com.example.rushiq.ui.theme.screen.AuthScreen
 import com.example.rushiq.ui.theme.screen.CafeScreen
 import com.example.rushiq.ui.theme.screen.CartScreen
+import com.example.rushiq.ui.theme.screen.CategoryType
 import com.example.rushiq.ui.theme.screen.ProductDetailScreen
 import com.example.rushiq.ui.theme.screen.WelcomeScreen
-import com.example.rushiq.ui.theme.screen.components.CategoriesSection
 import com.example.rushiq.ui.theme.viewmodels.AuthViewModel
 // Add these missing imports:
 // import com.example.rushiq.ui.theme.screen.SearchScreen
@@ -33,7 +33,7 @@ import kotlinx.coroutines.delay
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ZeptoNavGraph(
+fun RushiqNavHost(
     navController: NavHostController,
     paddingValues: PaddingValues,
     onBottomBarVisibilityChange: (Boolean) -> Unit,
@@ -51,9 +51,9 @@ fun ZeptoNavGraph(
     val selectedProduct = selectedProductId?.let { id -> products.find { it.id == id } }
 
     val startDestination = if (isAuthenticated) {
-        ZeptoDestinations.Welcome.route
+        RushiqDestination.Welcome.route
     } else {
-        ZeptoDestinations.Auth.route
+        RushiqDestination.Auth.route
     }
 
     LaunchedEffect(Unit) {
@@ -68,10 +68,10 @@ fun ZeptoNavGraph(
         if (navController.currentBackStackEntry != null) {
             val currentRoute = navController.currentBackStackEntry?.destination?.route
             Log.d("ZeptoNavGraph", "Current Route : $currentRoute")
-            if (isAuthenticated && currentRoute == ZeptoDestinations.Auth.route) {
+            if (isAuthenticated && currentRoute == RushiqDestination.Auth.route) {
                 Log.d("ZeptoNavGraph", "navigate from auth to welcome")
-                navController.navigate(ZeptoDestinations.Welcome.route) {
-                    popUpTo(ZeptoDestinations.Auth.route) { inclusive = true }
+                navController.navigate(RushiqDestination.Welcome.route) {
+                    popUpTo(RushiqDestination.Auth.route) { inclusive = true }
                 }
                 onBottomBarVisibilityChange(false)
             }
@@ -84,7 +84,7 @@ fun ZeptoNavGraph(
             startDestination = startDestination,
             modifier = Modifier.padding(paddingValues)
         ) {
-            composable(ZeptoDestinations.Welcome.route) {
+            composable(RushiqDestination.Welcome.route) {
                 LaunchedEffect(Unit) {
                     onBottomBarVisibilityChange(false)
                 }
@@ -93,11 +93,11 @@ fun ZeptoNavGraph(
                     onCategorySelected = { category ->
                         when (category) {
                             CategoryType.EVERYDAY -> {
-                                navController.navigate(ZeptoDestinations.Home.route)
+                                navController.navigate(RushiqDestination.Home.route)
                                 onBottomBarVisibilityChange(true)
                             }
                             CategoryType.CAFE -> {
-                                navController.navigate(ZeptoDestinations.Cafe.route)
+                                navController.navigate(RushiqDestination.Cafe.route)
                                 onBottomBarVisibilityChange(false)
                             }
                         }
@@ -106,7 +106,7 @@ fun ZeptoNavGraph(
             }
 
             // Fixed Cafe screen composable
-            composable(ZeptoDestinations.Cafe.route) {
+            composable(RushiqDestination.Cafe.route) {
                 LaunchedEffect(Unit) {
                     onBottomBarVisibilityChange(false)
                 }
@@ -114,7 +114,7 @@ fun ZeptoNavGraph(
                     paddingValues = paddingValues,
                     onNavigationToCategory = { categoryId ->
                         Log.d("Navigation", "Navigating to cafe category: $categoryId")
-                        navController.navigate(ZeptoDestinations.CategoryDetail.createRoute(categoryId))
+                        navController.navigate(RushiqDestination.CategoryDetail.createRoute(categoryId))
                     },
                     navHostController = navController,
                     onProductClick = { productId ->
@@ -124,14 +124,14 @@ fun ZeptoNavGraph(
                 )
             }
 
-            composable(ZeptoDestinations.Auth.route) {
+            composable(RushiqDestination.Auth.route) {
                 LaunchedEffect(Unit) {
                     onBottomBarVisibilityChange(false)
                 }
                 AuthScreen(
                     onAuthSuccess = {
-                        navController.navigate(ZeptoDestinations.Welcome.route) {
-                            popUpTo(ZeptoDestinations.Auth.route) { inclusive = true }
+                        navController.navigate(RushiqDestination.Welcome.route) {
+                            popUpTo(RushiqDestination.Auth.route) { inclusive = true }
                         }
                         onBottomBarVisibilityChange(true)
                     },
@@ -143,7 +143,7 @@ fun ZeptoNavGraph(
             }
 
             // Fixed HomeScreen composable
-            composable(ZeptoDestinations.Home.route) {
+            composable(RushiqDestination.Home.route) {
                 LaunchedEffect(Unit) {
                     onBottomBarVisibilityChange(true)
                 }
@@ -151,7 +151,7 @@ fun ZeptoNavGraph(
                     paddingValues = PaddingValues(),
                     onNavigationToCategory = { categoryId ->
                         Log.d("Navigation", "Navigating to category : $categoryId")
-                        navController.navigate(ZeptoDestinations.CategoryDetail.createRoute(categoryId))
+                        navController.navigate(RushiqDestination.CategoryDetail.createRoute(categoryId))
                     },
                     navHostController = navController,  // Changed from navController to navHostController
                     onProductClick = { productId ->
@@ -161,7 +161,7 @@ fun ZeptoNavGraph(
                 )
             }
 
-            composable(ZeptoDestinations.Search.route) {
+            composable(RushiqDestination.Search.route) {
                 LaunchedEffect(Unit) {
                     onBottomBarVisibilityChange(false)
                 }
@@ -178,7 +178,7 @@ fun ZeptoNavGraph(
                 */
             }
 
-            composable(ZeptoDestinations.Cart.route) {
+            composable(RushiqDestination.Cart.route) {
                 LaunchedEffect(Unit) {
                     onBottomBarVisibilityChange(true)
                 }
@@ -190,7 +190,7 @@ fun ZeptoNavGraph(
                 )
             }
 
-            composable(ZeptoDestinations.Account.route) {
+            composable(RushiqDestination.Account.route) {
                 LaunchedEffect(Unit) {
                     onBottomBarVisibilityChange(true)
                 }
@@ -207,7 +207,7 @@ fun ZeptoNavGraph(
 
             // Category detail route
             composable(
-                route = ZeptoDestinations.CategoryDetail.route,
+                route = RushiqDestination.CategoryDetail.route,
                 arguments = listOf(
                     navArgument("categoryId") { type = NavType.StringType }
                 )
@@ -232,7 +232,7 @@ fun ZeptoNavGraph(
             }
 
             composable(
-                ZeptoDestinations.ProductDetails.route,
+                RushiqDestination.ProductDetails.route,
                 arguments = listOf(
                     navArgument("productId") { type = NavType.IntType }
                 )

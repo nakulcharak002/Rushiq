@@ -39,7 +39,7 @@ import androidx.navigation.NavHostController
 import coil.ImageLoader
 import coil.request.ImageRequest
 import com.example.rushiq.data.models.fakeapi.Products
-import com.example.rushiq.ui.theme.navigation.ZeptoDestinations
+import com.example.rushiq.ui.theme.navigation.RushiqDestination
 import com.example.rushiq.ui.theme.viewmodels.HomeViewModel
 import com.example.rushiq.R
 import getCategoryGradient
@@ -144,7 +144,7 @@ fun HomeScreen(
                     .zIndex(0.9f)
             ) {
                 SearchBar(onSearchClick = {
-                    navHostController.navigate(ZeptoDestinations.Search.route)
+                    navHostController.navigate(RushiqDestination.Search.route)
                 })
             }
 

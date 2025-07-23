@@ -49,8 +49,8 @@ fun PaymentHistoryScreen(
     viewModel: PaymentHistoryViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val zeptoPurple = Color(color = 0xFF500970)
-    val zeptoPink = Color(color = 0xFFFF408D)
+    val RushiqPurple = Color(color = 0xFF500970)
+    val RushiqPink = Color(color = 0xFFFF408D)
 
     Scaffold(
         topBar = {
@@ -62,7 +62,7 @@ fun PaymentHistoryScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = zeptoPurple,
+                    containerColor = RushiqPurple,
                     titleContentColor = Color.White,
                     navigationIconContentColor = Color.White
                 )
@@ -78,7 +78,7 @@ fun PaymentHistoryScreen(
             when (val state = uiState) {
                 is PaymentHistoryState.Loading -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = zeptoPurple)
+                        CircularProgressIndicator(color = RushiqPurple)
                     }
                 }
 
@@ -118,7 +118,7 @@ fun PaymentHistoryScreen(
 
                         Button(
                             onClick = { navController.navigate("home") },
-                            colors = ButtonDefaults.buttonColors(containerColor = zeptoPink)
+                            colors = ButtonDefaults.buttonColors(containerColor = RushiqPink)
                         ) {
                             Text("Start Shopping")
                         }
