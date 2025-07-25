@@ -49,6 +49,6 @@ object NetworkModule {
             .baseUrl("https://fakestoreapi.com/")
             .build()
             .create(FakeStoreApiServices::class.java)
+    }
 
-}
 
