@@ -50,5 +50,6 @@ object NetworkModule {
             .build()
             .create(FakeStoreApiServices::class.java)
     }
+}
 
 
