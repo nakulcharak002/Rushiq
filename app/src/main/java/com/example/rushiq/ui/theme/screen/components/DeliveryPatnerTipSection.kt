@@ -47,7 +47,7 @@ fun DeliveryPartnerTipSection(
                 Icon(
                     painter = painterResource(R.drawable.money_round_1180_svgrepo_com),
                     contentDescription = "Tip",
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(25.dp),
                     tint = accentGreen
                 )
 
