@@ -6,6 +6,7 @@ import androidx.compose.ui.platform.LocalGraphicsContext
 import com.example.rushiq.data.models.mealDB.PaymentRecord
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 import javax.inject.Inject
@@ -13,7 +14,7 @@ import javax.inject.Inject
 class PaymentRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth : FirebaseAuth,
-    private  val context : Context
+    private  val context : ApplicationContext
 
 ) {
     private val TAG = "PaymentRepository"

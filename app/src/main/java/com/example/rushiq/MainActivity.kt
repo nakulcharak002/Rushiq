@@ -9,27 +9,20 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.ViewModelProvider
 import com.example.rushiq.ui.theme.RushiqTheme
 import com.example.rushiq.ui.theme.viewmodels.CartViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.razorpay.Checkout
-import com.valentinilk.shimmer.ShimmerBounds
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private lateinit var cartViewModel: CartViewModel
+
+
+    private val cartViewModel: CartViewModel by viewModels()
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +38,12 @@ class MainActivity : ComponentActivity() {
 
     private fun initializeAppComponents() {
         checkoutAuthStatusBeforeUI()
-        cartViewModel = ViewModelProvider(this)[CartViewModel::class.java]
+
+        // REMOVED: Don't manually create ViewModel
+        // cartViewModel = ViewModelProvider(this)[CartViewModel::class.java]
+
+        // The cartViewModel is now available through Hilt injection
+        Log.d("MainActivity", "CartViewModel initialized with ${cartViewModel.getTotalItems()} items")
     }
 
     private fun setUpDisplaySettings() {
@@ -61,7 +59,7 @@ class MainActivity : ComponentActivity() {
                 window.decorView.display?.supportedModes?.filter { it.refreshRate >= 120f }
                     ?.maxByOrNull { it.refreshRate }?.modeId ?: 0
         } catch (e: Exception) {
-            Log.e("Error checking" , "auth status :${e.message}")
+            Log.e("Error checking", "auth status: ${e.message}")
         }
     }
 
@@ -71,14 +69,12 @@ class MainActivity : ComponentActivity() {
         val auth = FirebaseAuth.getInstance()
         val user = auth.currentUser
 
-        // Log the current state
         if (user != null) {
             Log.d("MainActivity", "User authenticated at activity level: ${user.email}")
         } else {
             Log.d("MainActivity", "No user authenticated at activity level")
         }
 
-        // Optional: Clear any preferences that might be causing issues
         val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         val hasToken = prefs.contains("user_id")
 
@@ -88,20 +84,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     private fun clearStaleToken() {
-        // Help clean up any Razorpay resources
         try {
             val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
             val hasToken = prefs.contains("user_id")
             if (hasToken) {
-                Log.d(TAG, "found take token in preference , clearing it ")
+                Log.d(TAG, "found stale token in preference, clearing it")
                 prefs.edit().remove("user_id").apply()
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error cleaning preferences: ${e.message}")
         }
-
     }
 }
-

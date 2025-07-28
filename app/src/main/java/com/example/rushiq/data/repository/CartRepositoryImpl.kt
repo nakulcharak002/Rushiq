@@ -16,6 +16,7 @@ import javax.inject.Singleton
 @Singleton
 class CartRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
+    cartGson: Gson, // Note: you receive Gson, but you use your CartJsonAdapters.createGson()
 ) : CartRepository {
 
     companion object {

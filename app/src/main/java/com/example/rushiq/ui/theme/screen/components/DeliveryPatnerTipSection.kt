@@ -47,7 +47,7 @@ fun DeliveryPartnerTipSection(
                 Icon(
                     painter = painterResource(R.drawable.money_round_1180_svgrepo_com),
                     contentDescription = "Tip",
-                    modifier = Modifier.size(25.dp),
+                    modifier = Modifier.size(24.dp),
                     tint = accentGreen
                 )
 
@@ -68,7 +68,7 @@ fun DeliveryPartnerTipSection(
                 }
             }
         }
-            // tip options
+        // tip options
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(
@@ -110,24 +110,24 @@ fun DeliveryPartnerTipSection(
                         modifier = Modifier
                             .weight(1f)
                             .clickable {
-                                val newTip = if(selectedTip== tipAmount)-1 else tipAmount
+                                val newTip = if (selectedTip == tipAmount) -1 else tipAmount
                                 onTipSelected(newTip)
                             },
                         shape = RoundedCornerShape(8.dp),
                         colors = CardDefaults.outlinedCardColors(
-                            containerColor = if(isSelected) lightGreen else Color.White
+                            containerColor = if (isSelected) lightGreen else Color.White
 
                         ),
                         border = BorderStroke(
                             width = 1.dp,
-                            color = if(isSelected) accentGreen else Color.LightGray
+                            color = if (isSelected) accentGreen else Color.LightGray
                         )
 
-                    ){
+                    ) {
                         Text(
                             text = "₹$tipAmount",
-                            color = if (isSelected)accentGreen else Color.Gray,
-                            fontWeight = if(isSelected) FontWeight.Bold else FontWeight.Normal,
+                            color = if (isSelected) accentGreen else Color.Gray,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                             modifier = Modifier
                                 .padding(vertical = 8.dp)
                                 .align(Alignment.CenterHorizontally)
@@ -136,8 +136,8 @@ fun DeliveryPartnerTipSection(
                 }
             }
         }
-        if(selectedTip>0){
-            Spacer(modifier= Modifier.height(12.dp))
+        if (selectedTip > 0) {
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "thank you for tipping ₹$selectedTip to your delivery partner!",
                 style = MaterialTheme.typography.bodyMedium,
