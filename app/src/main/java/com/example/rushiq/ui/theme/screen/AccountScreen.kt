@@ -215,7 +215,7 @@ fun AccountScreen(
                 )
                 QuickActionItem(
                     icon = Icons.Default.AccountCircle,
-                    title = "Zepto\nCash",
+                    title = "Rushiq\nCash",
                     onClick = { navController.navigate("wallet") }
                 )
             }
@@ -388,7 +388,7 @@ fun RushiqCashCard(balance: String, onClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = "Zepto Cash & Gift Card",
+                text = "Rushiq Cash & Gift Card",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(1f)

@@ -68,7 +68,7 @@ fun WelcomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = Color(color = 0xFF333535),
+                        color = Color((0xFF1AA7EC)),
                         shape = RoundedCornerShape(topStart = 20.dp, bottomEnd = 20.dp),
                     )
                     .padding(16.dp),

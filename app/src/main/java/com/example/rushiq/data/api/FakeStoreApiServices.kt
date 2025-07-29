@@ -10,6 +10,7 @@ import javax.net.ssl.HttpsURLConnection
 
 class FakeStoreApiServices {
     private val baseUrl = "https://fakestoreapi.com"
+
     suspend fun fetchProducts(): List<Products> = withContext(Dispatchers.IO) {
         val url = URL("$baseUrl/products")
         val connection = url.openConnection() as HttpsURLConnection
@@ -47,48 +48,9 @@ class FakeStoreApiServices {
             connection.disconnect()
         }
     }
-    private fun parseCategoriesResponse(response:String) : List<String> {
-        val categories = mutableListOf<String>()
-        val jsonArray = JSONArray(response)
-        for (i in 0 until jsonArray.length()) {
-            val jsonObject = jsonArray.getString(i)
 
-        }
-        return categories
-    }
-
-    private fun parseProductsResponse(response:String) : List<Products>{
-        val products = mutableListOf<Products>()
-        val jsonArray = JSONArray(response)
-        for(i in 0  until jsonArray.length()){
-            val jsonObject = jsonArray.getJSONObject(i)
-            val id = jsonObject.getInt("id")
-            val title = jsonObject.getString("title")
-            val price = jsonObject.getDouble("price")
-            val imageUrl = jsonObject.getString("image ")
-            val category = jsonObject.getString("category")
-            val description = jsonObject.getString("description")
-            val rating = jsonObject.getJSONObject("rating")
-            val rate = rating.getDouble("rate")
-            val count = rating.getInt("count")
-            products.add(
-                Products(
-                    id =id,
-                    name = title,
-                    price = price,
-                    imageUrl = imageUrl,
-                    category = category,
-                    description = description,
-                    rating = Rating(
-                        rate = rate,
-                        count = count
-                    )
-                )
-            )
-        }
-        return products
-    } suspend fun fetchProductsByCategory(category: String): List<Products> = withContext(Dispatchers.IO) {
-        val url = URL("$baseUrl/products/categories/$category")
+    suspend fun fetchProductsByCategory(category: String): List<Products> = withContext(Dispatchers.IO) {
+        val url = URL("$baseUrl/products/category/$category")
         val connection = url.openConnection() as HttpsURLConnection
         try {
             connection.connectTimeout = 10000
@@ -104,5 +66,47 @@ class FakeStoreApiServices {
         } finally {
             connection.disconnect()
         }
+    }
+
+    private fun parseCategoriesResponse(response: String): List<String> {
+        val categories = mutableListOf<String>()
+        val jsonArray = JSONArray(response)
+        for (i in 0 until jsonArray.length()) {
+            val categoryName = jsonArray.getString(i)
+            categories.add(categoryName)
+        }
+        return categories
+    }
+
+    private fun parseProductsResponse(response: String): List<Products> {
+        val products = mutableListOf<Products>()
+        val jsonArray = JSONArray(response)
+        for (i in 0 until jsonArray.length()) {
+            val jsonObject = jsonArray.getJSONObject(i)
+            val id = jsonObject.getInt("id")
+            val title = jsonObject.getString("title")
+            val price = jsonObject.getDouble("price")
+            val imageUrl = jsonObject.getString("image")
+            val category = jsonObject.getString("category")
+            val description = jsonObject.getString("description")
+            val rating = jsonObject.getJSONObject("rating")
+            val rate = rating.getDouble("rate")
+            val count = rating.getInt("count")
+            products.add(
+                Products(
+                    id = id,
+                    name = title,
+                    price = price,
+                    imageUrl = imageUrl,
+                    category = category,
+                    description = description,
+                    rating = Rating(
+                        rate = rate,
+                        count = count
+                    )
+                )
+            )
+        }
+        return products
     }
 }

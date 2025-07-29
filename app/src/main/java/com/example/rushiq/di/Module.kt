@@ -99,15 +99,11 @@ object NetworkModule {
         .readTimeout(30, TimeUnit.SECONDS)
         .build()
 
+    // FIXED: Since FakeStoreApiServices is a class with manual HTTP connections,
+    // we don't use Retrofit to create it. Just instantiate it directly.
     @Provides
     @Singleton
-    fun provideFakeStoreApiServices(gson: Gson, okHttpClient: OkHttpClient): FakeStoreApiServices =
-        Retrofit.Builder()
-            .baseUrl("https://fakestoreapi.com/")
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
-            .create(FakeStoreApiServices::class.java)
+    fun provideFakeStoreApiServices(): FakeStoreApiServices = FakeStoreApiServices()
 
     @Provides
     @Singleton

@@ -14,68 +14,70 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import com.google.protobuf.ApiProto
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import okhttp3.internal.wait
 import java.security.MessageDigest
 import javax.inject.Inject
-import kotlin.jvm.Throws
+import javax.inject.Singleton
 
+@Singleton
 class AuthRepository @Inject constructor(
     private val sharedPreferences: SharedPreferences,
-    private val auth : FirebaseAuth,
+    private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
     private val googleSignInOptions: GoogleSignInOptions,
-    private val context: Context // Add application context
+    @ApplicationContext private val context: Context // Add @ApplicationContext annotation
 ) {
-    private var storedVerificationId :String? = null
-    private var resendToken  : PhoneAuthProvider.ForceResendingToken? = null
-    //custom users collection in firest0re
+    private var storedVerificationId: String? = null
+    private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
+    //custom users collection in firestore
     private val usersCollection = firestore.collection("users")
+
     init {
-        if(auth.currentUser == null){
+        if (auth.currentUser == null) {
             clearStoredToken()
         }
     }
-    suspend fun signUpWithCustomEmail(email: String , password : String): Result<String> = runCatching {
-        withContext(Dispatchers.IO){
-            val existingUsers = usersCollection.whereEqualTo("email" , email).get().await()
-            if(!existingUsers.isEmpty){
+
+    suspend fun signUpWithCustomEmail(email: String, password: String): Result<String> = runCatching {
+        withContext(Dispatchers.IO) {
+            val existingUsers = usersCollection.whereEqualTo("email", email).get().await()
+            if (!existingUsers.isEmpty) {
                 throw Exception("User with this email already exists")
             }
-            // hash the password (use a proper hashing library n production )
+            // hash the password (use a proper hashing library in production)
 
-            val hashedPassword  = hashPassword(password)
+            val hashedPassword = hashPassword(password)
             val userId = usersCollection.document().id
             val user = hashMapOf(
                 "userId" to userId,
-                "email"  to email,
+                "email" to email,
                 "password" to hashedPassword,
                 "createdAt" to System.currentTimeMillis()
             )
             usersCollection.document(userId).set(user).await()
             saveToken(userId)
             "Custom registration Successful"
-
         }
     }
-    suspend fun signInWithCustomEmail(email: String , password : String): Result<String> = runCatching {
-        withContext(Dispatchers.IO){
-            val querySnapshot = usersCollection.whereEqualTo("email" , email)
+
+    suspend fun signInWithCustomEmail(email: String, password: String): Result<String> = runCatching {
+        withContext(Dispatchers.IO) {
+            val querySnapshot = usersCollection.whereEqualTo("email", email)
                 .get()
                 .await()
-            if(querySnapshot.isEmpty){
-                throw Exception ("User Not found")
+            if (querySnapshot.isEmpty) {
+                throw Exception("User Not found")
             }
             val userDoc = querySnapshot.documents.first()
             val storedPassword = userDoc.getString("password")
-            if(storedPassword != hashPassword(password)){
+            if (storedPassword != hashPassword(password)) {
                 throw Exception("invalid password")
             }
             // Save user session
-            val userId = userDoc.getString("userId")?:throw Exception("invalid user data")
+            val userId = userDoc.getString("userId") ?: throw Exception("invalid user data")
             saveToken(userId)
             "Custom Login successful"
         }
@@ -161,6 +163,7 @@ class AuthRepository @Inject constructor(
             }
         }
     }
+
     suspend fun signOut(): Result<String> = runCatching {
         withContext(Dispatchers.IO) {
             Log.d(TAG, "Signing out user")
@@ -196,6 +199,7 @@ class AuthRepository @Inject constructor(
             }
         }
     }
+
     fun getCurrentUser() = auth.currentUser
 
     fun isAuthenticated(): Boolean {
@@ -211,7 +215,7 @@ class AuthRepository @Inject constructor(
         }
 
         // Then check local storage for custom auth
-        val userId = sharedPreferences.getString( "user_id",  null)
+        val userId = sharedPreferences.getString("user_id", null)
         val isAuthViaCustom = !userId.isNullOrEmpty()
 
         if (isAuthViaCustom) {
@@ -224,16 +228,37 @@ class AuthRepository @Inject constructor(
 
         return isAuthViaCustom
     }
-    private fun hashPassword(password : String): String{
+
+    // Additional utility methods for easier usage
+    fun getUserIdFromPreferences(): String? = sharedPreferences.getString("user_id", null)
+
+    fun savePreference(key: String, value: String) {
+        sharedPreferences.edit().putString(key, value).apply()
+    }
+
+    fun getPreference(key: String, defaultValue: String? = null): String? {
+        return sharedPreferences.getString(key, defaultValue)
+    }
+
+    fun saveBooleanPreference(key: String, value: Boolean) {
+        sharedPreferences.edit().putBoolean(key, value).apply()
+    }
+
+    fun getBooleanPreference(key: String, defaultValue: Boolean = false): Boolean {
+        return sharedPreferences.getBoolean(key, defaultValue)
+    }
+
+    private fun hashPassword(password: String): String {
         return MessageDigest.getInstance("SHA-256")
             .digest(password.toByteArray())
-            .fold(""){str, it -> str + "%02x".format(it)}
+            .fold("") { str, it -> str + "%02x".format(it) }
     }
-    private fun saveToken(token: String){
-        sharedPreferences.edit().putString("user_id" , token).apply()
 
+    private fun saveToken(token: String) {
+        sharedPreferences.edit().putString("user_id", token).apply()
     }
-    private fun clearStoredToken(){
+
+    private fun clearStoredToken() {
         sharedPreferences.edit().remove("user_id").apply()
     }
 }

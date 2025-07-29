@@ -2,7 +2,6 @@ package com.example.rushiq.data.repository
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.ui.platform.LocalGraphicsContext
 import com.example.rushiq.data.models.mealDB.PaymentRecord
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -10,12 +9,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class PaymentRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val auth : FirebaseAuth,
-    private  val context : ApplicationContext
-
+    private val auth: FirebaseAuth,
+    @ApplicationContext private val context: Context  // Fixed: Use Context with @ApplicationContext annotation
 ) {
     private val TAG = "PaymentRepository"
     private val usersCollection = firestore.collection("users")
@@ -54,7 +54,7 @@ class PaymentRepository @Inject constructor(
         return try {
             val currentUser = auth.currentUser
             if (currentUser == null) {
-                Log.e(TAG, "setPayment failed: User not logged in")
+                Log.e(TAG, "savePayment failed: User not logged in")
                 return Result.failure(Exception("User not logged in"))
             }
 
@@ -86,6 +86,7 @@ class PaymentRepository @Inject constructor(
                 items = items,
                 itemImageUrls = itemImageUrls
             )
+
             try {
                 val userDoc = usersCollection.document(userId).get().await()
                 if (!userDoc.exists()) {
@@ -98,12 +99,14 @@ class PaymentRepository @Inject constructor(
                     )
                     usersCollection.document(userId).set(userData).await()
                 }
+
                 // save payment to subCollection
                 usersCollection.document(userId)
                     .collection("payments")
                     .document(paymentId)
                     .set(paymentRecord)
                     .await()
+
                 //update user document with latest payment summary
                 usersCollection.document(userId).update(
                     mapOf(
@@ -113,20 +116,21 @@ class PaymentRepository @Inject constructor(
                     )
                 ).await()
 
-                Log.d(TAG , "Payment Successfully saved to the users/$userId/payments/$paymentId")
+                Log.d(TAG, "Payment Successfully saved to the users/$userId/payments/$paymentId")
                 Result.success(paymentRecord)
-            }catch (e: Exception){
-                Log.e(TAG , "Error saving payment , e")
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Error saving payment", e)
                 e.printStackTrace()
                 Result.failure(e)
             }
-            }catch (e: Exception){
-            Log.e(TAG , "savePayment()failed , e")
+
+        } catch (e: Exception) {
+            Log.e(TAG, "savePayment() failed", e)
             e.printStackTrace()
             Result.failure(e)
-
-            }
         }
+    }
 
     suspend fun getPayment(paymentId: String): Result<PaymentRecord> {
         Log.d(TAG, "getPayment() - Retrieving payment with ID: $paymentId")
@@ -155,7 +159,7 @@ class PaymentRepository @Inject constructor(
                     Log.d(TAG, "Successfully retrieved payment - amount: ${payment.amount}, status: ${payment.status}")
                     // Log number of image URLs retrieved if any
                     payment.itemImageUrls?.let {
-                        Log.d(TAG, "Retrieved payment has${it.size} item image urls")
+                        Log.d(TAG, "Retrieved payment has ${it.size} item image urls")
                     }
                     Result.success(payment)
                 } else {
@@ -166,11 +170,12 @@ class PaymentRepository @Inject constructor(
                 Log.e(TAG, "Payment document not found: users/$userId/payments/$paymentId")
                 Result.failure(Exception("Payment not found"))
             }
-        } catch (e: Exception) {e
+        } catch (e: Exception) {
             Log.e(TAG, "Error retrieving payment", e)
             Result.failure(e)
         }
     }
+
     /**
      * Get all payments for current user
      */
@@ -213,7 +218,7 @@ class PaymentRepository @Inject constructor(
 
             } catch (e: Exception) {
                 Log.e(TAG, "Error querying user payments", e)
-               e.printStackTrace()
+                e.printStackTrace()
                 throw e
             }
 
@@ -223,7 +228,4 @@ class PaymentRepository @Inject constructor(
             Result.failure(e)
         }
     }
-
-
-    }
-
+}
