@@ -816,7 +816,7 @@ fun CartScreen(
                     ) {
                         Button(
                             onClick = {
-                                // Handle payment
+                                cartViewModel.showBottomSheet()
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -85,7 +86,7 @@ fun ProductDetailScreen(
         val totalUsers = 2854
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .background(Color(0x99000000))
                 .clickable(onClick = onDismiss)
 
@@ -117,6 +118,7 @@ fun ProductDetailScreen(
             Box(
                 modifier = Modifier
                     .align (Alignment.BottomCenter)
+                    .fillMaxWidth()
                     .fillMaxHeight(0.75f)
                     .clip(RoundedCornerShape(topStart = 16.dp , topEnd = 16.dp))
                     .background(Color.White)
@@ -430,7 +432,7 @@ fun ProductDetailScreen(
                         }
                     }
                     // extra padding at the bottom to ensure all the content is scrollable
-                    Spacer(modifier = Modifier.height(50.dp))
+//                    Spacer(modifier = Modifier.height(50.dp))
                 }
                 // bottom add to cart section
                 Surface(

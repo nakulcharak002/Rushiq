@@ -52,11 +52,12 @@ fun LocationWithLiveAddress(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .padding(16.dp)
             .background(
                 color = backgroundColor,
                 shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
-            )
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            ),
+
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -67,7 +68,7 @@ fun LocationWithLiveAddress(
             Icon(
                 painter = painterResource(id = R.drawable.user_03_stroke_rounded),
                 contentDescription = "User",
-                tint = contentColor,
+                tint = Color.White,
                 modifier = Modifier.size(36.dp)
             )
         }
@@ -84,62 +85,54 @@ fun LocationWithLiveAddress(
                 Text(
                     text = "Delivery in ",
                     fontWeight = FontWeight.SemiBold,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White
-                )
-
-                Text(
-                    text = deliveryTime, // dynamic delivery time
-                    fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.headlineLarge,
                     color = Color.White
                 )
-            }
 
-
-            Text(
-                text = address,
-                fontWeight = FontWeight.Normal,
-                style = MaterialTheme.typography.headlineLarge.copy(
-                ),
-                color = Color.White
-            )
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(end = 4.dp)
-
-        ) {
-            if(isLoading){
-                CircularProgressIndicator(
-                    modifier = Modifier.size(14.dp),
-                    color = Color.White.copy(alpha = 0.7f),
-                    strokeWidth = 2.dp,
-                )
-                Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "Loading address...",
-                    fontSize = 14.sp,
-                    color =  Color.White.copy(alpha = 0.7f),
-                )
-            }
-            else{
-                Text(
-                    text = address.ifEmpty { "Home - indirapuram , Uttarpradesh" },
-                    style = MaterialTheme.typography.titleSmall,
+                    text = deliveryTime ?: "6 Mins", // dynamic delivery time
                     fontWeight = FontWeight.ExtraBold,
-                    color = Color.White,
-                    maxLines = 2,
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                    ),
+                    color = Color.White
                 )
-                if (isLoading && address.isNotEmpty()){
-                    Spacer(modifier = Modifier.width(4.dp))
-                    CircularProgressIndicator(
-                        modifier= Modifier.size(8.dp),
-                        color = Color.White.copy(alpha = 0.5f),
-                        strokeWidth = 1.dp,
+            }
 
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(end = 4.dp)
+
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(14.dp),
+                        color = Color.White.copy(alpha = 0.7f),
+                        strokeWidth = 2.dp,
                     )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Loading address...",
+                        fontSize = 14.sp,
+                        color = Color.White.copy(alpha = 0.7f),
+                    )
+                } else {
+                    Text(
+                        text = address.ifEmpty { "Home - indirapuram , Uttarpradesh" },
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White,
+                        maxLines = 2,
+                    )
+                    if (isLoading && address.isNotEmpty()) {
+                        Spacer(modifier = Modifier.width(4.dp))
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(8.dp),
+                            color = Color.White.copy(alpha = 0.5f),
+                            strokeWidth = 1.dp,
+
+                            )
+                    }
                 }
             }
         }

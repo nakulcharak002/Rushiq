@@ -87,7 +87,11 @@ fun HomeScreen(
         derivedStateOf {
             when {
                 scrollState.firstVisibleItemIndex > 0 -> 1f
-                else -> (scrollState.firstVisibleItemScrollOffset / 1000f).coerceIn(0f, 1f)
+                scrollState.firstVisibleItemScrollOffset > 0 -> {
+                    (scrollState.firstVisibleItemScrollOffset / 1000f).coerceIn(0f, 1f)
+                }
+
+                else -> 0f
             }
         }
     }

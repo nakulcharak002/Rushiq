@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 private const val TAG = "AuthViewModel"
+
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository
@@ -88,22 +88,23 @@ class AuthViewModel @Inject constructor(
             processAuthResult(result, "Custom sign up")
         }
     }
+
+    // FIXED: This method now correctly calls signInWithCustomEmail
     fun signInWithCustomEmail(email: String, password: String) {
         viewModelScope.launch {
-            Log.d(TAG, "Attempting custom sign up with email: $email")
+            Log.d(TAG, "Attempting custom sign in with email: $email") // Fixed log message
             _authState.value = AuthState.Loading
-            val result = authRepository.signUpWithCustomEmail(email, password)
-            processAuthResult(result, "Custom sign up")
+            val result = authRepository.signInWithCustomEmail(email, password) // FIXED: Now calls signIn instead of signUp
+            processAuthResult(result, "Custom sign in") // Fixed operation name
         }
     }
-    //Google authentication
-    fun getGoogleSignInIntent(activity: Activity):Intent{
-        Log.d(TAG , "getting google sign - In intent")
+
+    // Google authentication
+    fun getGoogleSignInIntent(activity: Activity): Intent {
+        Log.d(TAG, "getting google sign - In intent")
         _authState.value = AuthState.Loading
         return authRepository.getGoogleSignInIntent()
-
     }
-
 
     fun handleGoogleSignInResult(data: Intent?) {
         viewModelScope.launch {
@@ -154,12 +155,10 @@ class AuthViewModel @Inject constructor(
 
     fun getCurrentUser() = authRepository.getCurrentUser()
 
-
-
     private fun processAuthResult(result: Result<String>, operation: String) {
         result.fold(
             onSuccess = { message ->
-                Log.d(TAG,  "Successful $operation: $message")
+                Log.d(TAG, "Successful $operation: $message")
                 _authState.value = AuthState.Success(message)
 
                 // IMPORTANT: Set isAuthenticated to true immediately
@@ -170,19 +169,20 @@ class AuthViewModel @Inject constructor(
             },
             onFailure = { exception ->
                 val errorMsg = exception.localizedMessage ?: "Unknown error occurred"
-                Log.e(TAG,  "$operation failed: $errorMsg", exception)
+                Log.e(TAG, "$operation failed: $errorMsg", exception)
                 _authState.value = AuthState.Error(errorMsg)
             }
         )
     }
-    fun signOut(){
+
+    fun signOut() {
         viewModelScope.launch {
-                Log.d(TAG , "Attempting sign Out")
+            Log.d(TAG, "Attempting sign Out")
             _authState.value = AuthState.Loading
             try {
                 val result = authRepository.signOut()
-                result.onSuccess {message ->
-                    Log.d(TAG , "Sign out successful : $message")
+                result.onSuccess { message ->
+                    Log.d(TAG, "Sign out successful : $message")
                     _authState.value = AuthState.Success(message)
                     // important :Explicitly set authentication state to false immediately
                     _isAuthenticated.value = false
@@ -190,36 +190,36 @@ class AuthViewModel @Inject constructor(
                     clearSessionData()
 
                 }.onFailure { exception ->
-                    val errorMsg = exception.localizedMessage?:"Sign Out failed"
-                    Log.e(TAG , errorMsg , exception)
+                    val errorMsg = exception.localizedMessage ?: "Sign Out failed"
+                    Log.e(TAG, errorMsg, exception)
                     _authState.value = AuthState.Error(errorMsg)
                     checkAuthStatus()
                 }
-            }catch (e: Exception){
-                Log.e(TAG , "exception during log out", e)
-                _authState.value= AuthState.Error("sign Out failed:${e.message}")
+            } catch (e: Exception) {
+                Log.e(TAG, "exception during log out", e)
+                _authState.value = AuthState.Error("sign Out failed:${e.message}")
                 checkAuthStatus()
             }
         }
     }
-    private fun clearSessionData(){
+
+    private fun clearSessionData() {
         _phoneNumber.value = null
         _otpSent.value = false
         verificationCredential = null
     }
 
-
     fun resetAuthState() {
-        Log.d(TAG,  "Resetting auth state")
+        Log.d(TAG, "Resetting auth state")
         _authState.value = AuthState.Initial
     }
 
     companion object {
         const val GOOGLE_SIGN_IN_REQUEST_CODE = 9001
     }
+
     fun setErrorState(message: String) {
         Log.d(TAG, "Setting error state: $message")
         _authState.value = AuthState.Error(message)
     }
-
 }

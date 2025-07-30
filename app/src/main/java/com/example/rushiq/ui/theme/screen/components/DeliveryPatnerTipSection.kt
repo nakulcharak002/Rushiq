@@ -78,61 +78,29 @@ fun DeliveryPartnerTipSection(
             tipOptions.forEach { tipAmount ->
                 val isSelected = selectedTip == tipAmount
 
-                // Don't show button for 0 tip, instead show "No Tip" option
-                if (tipAmount != 0) {
-                    OutlinedCard(
+                OutlinedCard(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            onTipSelected(if (isSelected) 0 else tipAmount)
+                        },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = CardDefaults.outlinedCardColors(
+                        containerColor = if (isSelected) lightGreen else Color.White
+                    ),
+                    border = BorderStroke(
+                        width = 1.dp,
+                        color = if (isSelected) accentGreen else Color.LightGray
+                    )
+                ) {
+                    Text(
+                        text = if (tipAmount == 0) "No Tip" else "₹$tipAmount",
+                        color = if (isSelected) accentGreen else Color.Gray,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                         modifier = Modifier
-                            .weight(1f)
-                            .clickable {
-                                val newTip = if (selectedTip == 0) -1 else 0
-                                onTipSelected(newTip)
-                            },
-                        shape = RoundedCornerShape(8.dp),
-                        colors = CardDefaults.outlinedCardColors(
-                            containerColor = if (isSelected) lightGreen else Color.White
-                        ),
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = if (isSelected) accentGreen else Color.LightGray
-                        )
-                    ) {
-                        Text(
-                            text = "No Tip",
-                            color = if (isSelected) accentGreen else Color.Gray,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                            modifier = Modifier
-                                .padding(vertical = 8.dp)
-                                .align(Alignment.CenterHorizontally)
-                        )
-                    }
-                } else {
-                    OutlinedCard(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable {
-                                val newTip = if (selectedTip == tipAmount) -1 else tipAmount
-                                onTipSelected(newTip)
-                            },
-                        shape = RoundedCornerShape(8.dp),
-                        colors = CardDefaults.outlinedCardColors(
-                            containerColor = if (isSelected) lightGreen else Color.White
-
-                        ),
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = if (isSelected) accentGreen else Color.LightGray
-                        )
-
-                    ) {
-                        Text(
-                            text = "₹$tipAmount",
-                            color = if (isSelected) accentGreen else Color.Gray,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                            modifier = Modifier
-                                .padding(vertical = 8.dp)
-                                .align(Alignment.CenterHorizontally)
-                        )
-                    }
+                            .padding(vertical = 8.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
                 }
             }
         }
@@ -144,6 +112,5 @@ fun DeliveryPartnerTipSection(
                 color = accentGreen
             )
         }
-
     }
 }

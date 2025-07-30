@@ -241,7 +241,7 @@ fun BillSummaryBottomSheet(
                         Text(
                             text = "Free delivery on this order",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = if (isEligibleForFreeDelivery.value) Color(0xFF007148) else Color.Gray
+                            color = if (isEligibleForFreeDelivery.value) Color(0xFF007148) else Color(0xFFE6E6FA)
                         )
 
                         Spacer(modifier = Modifier.weight(1f))
