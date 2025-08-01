@@ -458,4 +458,4 @@ fun PriceRow(
             color = Color.DarkGray
         )
     }
-}
+
